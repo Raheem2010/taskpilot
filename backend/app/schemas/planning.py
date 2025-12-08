@@ -1,14 +1,17 @@
 from datetime import date
 from typing import List, Optional, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class GoalRequest(BaseModel):
     goal: str
     deadline: Optional[date] = None
-    time_available_per_day: Optional[int] = None  # minutes per day
-
+    time_available_per_day: Optional[int] = Field(
+        default=None,
+        ge=0,
+        description="Minutes per day the user can commit (must be non-negative).",
+    )
 
 class Milestone(BaseModel):
     title: str
@@ -19,10 +22,13 @@ class Task(BaseModel):
     id: str
     task: str
     milestone: Optional[str] = None
-    duration_minutes: Optional[int] = None
+    duration_minutes: Optional[int] = Field(
+        default=None,
+        ge=0,
+        description="Estimated task duration in minutes (must be non-negative).",
+    )
     recommended_day: Optional[date] = None
     status: Literal["pending", "completed", "missed"] = "pending"
-
 
 class PlanResponse(BaseModel):
     milestones: List[Milestone]
