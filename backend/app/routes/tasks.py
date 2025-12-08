@@ -35,7 +35,7 @@ async def get_today_tasks() -> TodayTasksResponse:
 
 
 @router.patch("/update-status", status_code=status.HTTP_200_OK)
-async def update_task_status(payload: TaskStatusUpdate) -> dict:
+async def update_task_status(payload: TaskStatusUpdate) -> Dict[str, str]:
     """
     Update the status of a given task.
     For now, this operates on the in-memory FAKE_TASKS_DB.
@@ -44,9 +44,9 @@ async def update_task_status(payload: TaskStatusUpdate) -> dict:
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    task.status = payload.status  # type: ignore[assignment]
-    FAKE_TASKS_DB[payload.task_id] = task
-
+    updated_task = task.model_copy(update={"status": payload.status})
+    FAKE_TASKS_DB[payload.task_id] = updated_task
+    
     return {
         "message": "Task status updated",
         "task_id": payload.task_id,
