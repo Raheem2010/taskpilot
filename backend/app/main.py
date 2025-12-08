@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.routes import tasks, goals
 
 app = FastAPI(
     title="TaskPilot Backend",
@@ -13,3 +14,6 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+app.include_router(goals.router)
+app.include_router(tasks.router)
