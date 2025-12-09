@@ -55,18 +55,18 @@ class PlanSummaryResponse(BaseModel):
     missed_tasks: int
 
 class PlanRequest(BaseModel):
-    goal: str
+    goal: str = Field(..., min_length=1, description="The user's goal statement")
     deadline: Optional[date] = None
 
 
-class Milestone(BaseModel):
+class PlanGenerationMilestone(BaseModel):
     id: int
     title: str
     due: Optional[date] = None
     tasks: List[str]
 
 
-class PlanResponse(BaseModel):
+class PlanGenerationResponse(BaseModel):
     goal: str
     deadline: Optional[date] = None
-    milestones: List[Milestone]
+    milestones: List[PlanGenerationMilestone]

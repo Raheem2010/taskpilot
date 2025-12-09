@@ -29,8 +29,11 @@ export default function HomePage() {
     });
 
     if (!res.ok) {
-      throw new Error("Failed to generate plan");
-    }
+  const errData = await res.json().catch(() => ({}));
+  throw new Error(
+    errData.detail || errData.message || "Failed to generate plan"
+  );
+}
 
     const data = await res.json();
 
@@ -47,7 +50,6 @@ export default function HomePage() {
     setLoading(false);
   }
 }
-
 
   return (
     <section className="space-y-6">
@@ -88,10 +90,11 @@ export default function HomePage() {
         </div>
 
         {error && (
-          <p className="text-sm text-red-400 bg-red-950/30 border border-red-900 rounded-xl px-3 py-2 rounded-xl">
-            {error}
-          </p>
+            <p className="text-sm text-red-400 bg-red-950/30 border border-red-900 rounded-xl px-3 py-2">
+             {error}
+            </p>
         )}
+
 
         <button
           type="submit"

@@ -1,32 +1,37 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import List
-
 from fastapi import APIRouter
-
-from app.schemas.planning import PlanRequest, PlanResponse, Milestone
+from app.schemas.planning import PlanRequest,PlanGenerationResponse, PlanGenerationMilestone
 
 router = APIRouter(tags=["Planning"])
 
 
-@router.post("/plan", response_model=PlanResponse)
-async def generate_plan(payload: PlanRequest) -> PlanResponse:
+from datetime import date, timedelta  # add timedelta if you apply enhancement
+from typing import List
+
+@router.post("/plan", response_model=PlanGenerationResponse)
+async def generate_plan(payload: PlanRequest) -> PlanGenerationResponse:
     """
     Simple dummy planner that turns a goal + deadline into 2 milestones.
-    Later we can swap this logic for a real LLM/agentic planner.
     """
-    # Basic "AI-style" plan using the goal text
-    milestones: List[Milestone] = [
-        Milestone(
+
+    mid_deadline = None
+    if payload.deadline:
+        days_diff = (payload.deadline - date.today()).days
+        mid_deadline = date.today() + timedelta(days=days_diff // 2)
+
+    milestones: List[PlanGenerationMilestone] = [
+        PlanGenerationMilestone(
             id=1,
             title="Understand & scope the goal",
-            due=payload.deadline,
+            due=mid_deadline,
             tasks=[
                 f"Clarify requirements for: {payload.goal}",
                 "Agree on success criteria with the team",
                 "Define constraints, tools and target users",
             ],
         ),
-        Milestone(
+        PlanGenerationMilestone(
             id=2,
             title="Execute and ship MVP",
             due=payload.deadline,
@@ -38,7 +43,7 @@ async def generate_plan(payload: PlanRequest) -> PlanResponse:
         ),
     ]
 
-    return PlanResponse(
+    return PlanGenerationResponse(
         goal=payload.goal,
         deadline=payload.deadline,
         milestones=milestones,
