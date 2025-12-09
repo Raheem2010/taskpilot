@@ -5,10 +5,6 @@ from app.schemas.planning import PlanRequest,PlanGenerationResponse, PlanGenerat
 
 router = APIRouter(tags=["Planning"])
 
-
-from datetime import date, timedelta  # add timedelta if you apply enhancement
-from typing import List
-
 @router.post("/plan", response_model=PlanGenerationResponse)
 async def generate_plan(payload: PlanRequest) -> PlanGenerationResponse:
     """
