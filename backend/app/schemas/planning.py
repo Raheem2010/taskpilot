@@ -31,6 +31,7 @@ class Task(BaseModel):
     status: Literal["pending", "completed", "missed"] = "pending"
 
 class PlanResponse(BaseModel):
+    goal: str
     milestones: List[Milestone]
     tasks: List[Task]
     schedule_summary: str
@@ -52,3 +53,20 @@ class PlanSummaryResponse(BaseModel):
     completed_tasks: int
     pending_tasks: int
     missed_tasks: int
+
+class PlanRequest(BaseModel):
+    goal: str = Field(..., min_length=1, description="The user's goal statement")
+    deadline: Optional[date] = None
+
+
+class PlanGenerationMilestone(BaseModel):
+    id: int
+    title: str
+    due: Optional[date] = None
+    tasks: List[str]
+
+
+class PlanGenerationResponse(BaseModel):
+    goal: str
+    deadline: Optional[date] = None
+    milestones: List[PlanGenerationMilestone]
