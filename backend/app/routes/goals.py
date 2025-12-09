@@ -18,12 +18,14 @@ async def create_plan(payload: GoalRequest) -> PlanResponse:
     # TODO: Replace this with a call to Kestra workflow + Oumi agent.
     dummy_milestones = [
         Milestone(
+            id="milestone-1",
             title="Understand the basics",
-            description="Cover the core concepts related to your goal.",
+            tasks=[],
         ),
         Milestone(
+            id="milestone-2",
             title="Practice with small tasks",
-            description="Apply what you've learned in practical exercises.",
+            tasks=[],
         ),
     ]
 
