@@ -26,10 +26,10 @@ def plan(
     payload = {"goal": goal}
 
     try:
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout=30)
     except requests.exceptions.RequestException as e:
-        typer.secho(f"❌ Failed to contact backend: {e}", err=True)
-        raise typer.Exit(code=1)
+        typer.secho(f"❌ Failed to contact backend: {e}", err=True, fg=typer.colors.RED)
+        raise typer.Exit(code=1) from e
 
     if response.status_code != 200:
         typer.secho(
@@ -91,10 +91,10 @@ def status(
         params["goal_id"] = goal_id
 
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=30)
     except requests.exceptions.RequestException as e:
-        typer.secho(f"❌ Failed to contact backend: {e}", err=True)
-        raise typer.Exit(code=1)
+        typer.secho(f"❌ Failed to contact backend: {e}", err=True, fg=typer.colors.RED)
+        raise typer.Exit(code=1) from e
 
     if response.status_code != 200:
         typer.secho(

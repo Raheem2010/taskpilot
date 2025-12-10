@@ -1,11 +1,11 @@
 import psycopg
-from fastapi import APIRouter, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
+from app import models
 from app.api.v1.routes.agent import router as agent_router
 from app.database import Base, engine
 from app.models import agent
 from app.routes import goals, planning, tasks
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="TaskPilot Backend",
@@ -29,17 +29,15 @@ app.add_middleware(
 )
 
 
-try:
-    from psycopg.rows import dict_row
-
-    conn = psycopg.connect(
-        host="localhost", dbname="postgres", user="postgres", password="1984152099"
-    )
-    cursor = conn.cursor(row_factory=dict_row)
-    print("Database connection was successful!")
-except Exception as e:
-    print("Connecting to database failed")
-    print("Error:", e)
+@app.on_event("startup")
+async def verify_db_connection():
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        print("Database connection successful!")
+    except Exception as e:
+        print(f"Database connection failed: {e}")
+        raise
 
 
 @app.get("/")

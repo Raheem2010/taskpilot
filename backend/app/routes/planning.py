@@ -1,10 +1,12 @@
 from datetime import date, timedelta
 from typing import List
 
+from app.schemas.planning import (
+    PlanGenerationMilestone,
+    PlanGenerationResponse,
+    PlanRequest,
+)
 from fastapi import APIRouter
-
-from app.schemas.planning import (PlanGenerationMilestone,
-                                  PlanGenerationResponse, PlanRequest)
 
 router = APIRouter(tags=["Planning"])
 

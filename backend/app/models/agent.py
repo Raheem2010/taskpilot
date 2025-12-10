@@ -1,9 +1,8 @@
 from datetime import datetime
 
+from app.database import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
-from app.database import Base
 
 
 class Goal(Base):

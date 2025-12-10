@@ -1,13 +1,15 @@
-# app/api/v1/routes/agent.py
-
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-
-from app.api.v1.schemas.agent import (GoalStatusSchema, MilestoneSchema,
-                                      PlanRequest, PlanResponse,
-                                      StatusResponse, TaskSchema)
+from app.api.v1.schemas.agent import (
+    GoalStatusSchema,
+    MilestoneSchema,
+    PlanRequest,
+    PlanResponse,
+    StatusResponse,
+    TaskSchema,
+)
 from app.database import get_db
 from app.models.agent import Goal, Task
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["agent"])
 

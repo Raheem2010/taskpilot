@@ -1,6 +1,5 @@
-from fastapi import APIRouter, status
-
 from app.schemas.planning import GoalRequest, Milestone, PlanResponse, Task
+from fastapi import APIRouter, status
 
 router = APIRouter(prefix="/goals", tags=["Goals"])
 
