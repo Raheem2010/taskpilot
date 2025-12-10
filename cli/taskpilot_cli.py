@@ -1,6 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 import requests
 import typer
-from typing import Any, Dict, List, Optional
 
 from .config import get_full_url
 

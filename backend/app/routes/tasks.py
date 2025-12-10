@@ -3,12 +3,8 @@ from typing import Dict
 
 from fastapi import APIRouter, HTTPException, status
 
-from app.schemas.planning import (
-    Task,
-    TaskStatusUpdate,
-    TodayTasksResponse,
-    PlanSummaryResponse,
-)
+from app.schemas.planning import (PlanSummaryResponse, Task, TaskStatusUpdate,
+                                  TodayTasksResponse)
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 

@@ -1,10 +1,11 @@
-from fastapi import FastAPI, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from app.routes import tasks, goals, planning
-from app.api.v1.routes.agent import router as agent_router
 import psycopg
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api.v1.routes.agent import router as agent_router
 from app.database import Base, engine
 from app.models import agent
+from app.routes import goals, planning, tasks
 
 app = FastAPI(
     title="TaskPilot Backend",
