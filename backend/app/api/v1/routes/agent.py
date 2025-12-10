@@ -15,9 +15,7 @@ router = APIRouter(tags=["agent"])
 
 
 @router.post("/plan", response_model=PlanResponse)
-async def generate_plan(
-    payload: PlanRequest, db: Session = Depends(get_db)
-) -> PlanResponse:
+def generate_plan(payload: PlanRequest, db: Session = Depends(get_db)) -> PlanResponse:
     goal_text = payload.goal
 
     # 1) Create Goal row in DB
@@ -64,6 +62,9 @@ async def generate_plan(
     # 4) Reload tasks from DB and assign IDs in creation order
     db.refresh(db_goal)
     db_tasks = list(db_goal.tasks)
+
+    db_tasks.sort(key=lambda t: t.id)
+
     task_idx = 0
 
     for m in milestones:
@@ -76,7 +77,7 @@ async def generate_plan(
 
 
 @router.get("/status", response_model=StatusResponse)
-async def get_status(
+def get_status(
     goal_id: int | None = Query(None, description="Optional goal id to filter by"),
     db: Session = Depends(get_db),
 ):

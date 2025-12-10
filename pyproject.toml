@@ -1,5 +1,5 @@
 [project]
-requires-python = ">=3.10"
+target-version = ["py310", "py311"]
 
 [tool.black]
 line-length = 88

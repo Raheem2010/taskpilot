@@ -29,13 +29,13 @@ async def create_plan(payload: GoalRequest) -> PlanResponse:
     dummy_tasks = [
         Task(
             id="1",
-            task="Read introduction materials for 30 minutes",
+            title="Read introduction materials for 30 minutes",
             milestone=dummy_milestones[0].title,
             duration_minutes=30,
         ),
         Task(
             id="2",
-            task="Do one small practice exercise",
+            title="Do one small practice exercise",
             milestone=dummy_milestones[1].title,
             duration_minutes=45,
         ),
