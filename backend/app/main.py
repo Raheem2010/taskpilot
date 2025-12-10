@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import tasks, goals, planning 
+from app.api.v1.routes.agent import router as agent_router
 
 app = FastAPI(
     title="TaskPilot Backend",
@@ -33,3 +34,4 @@ def health_check():
 app.include_router(goals.router)
 app.include_router(tasks.router)
 app.include_router(planning.router)
+app.include_router(agent_router, prefix="/api/v1")
