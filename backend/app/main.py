@@ -1,15 +1,15 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import tasks, goals, planning 
+from app.routes import tasks, goals, planning
 from app.api.v1.routes.agent import router as agent_router
 import psycopg
 from app.database import Base, engine
-from app.models import agent  
+from app.models import agent
 
 app = FastAPI(
     title="TaskPilot Backend",
     version="0.1.0",
-    description="Backend API for TaskPilot - AI-powered task planning and workflow automation."
+    description="Backend API for TaskPilot - AI-powered task planning and workflow automation.",
 )
 
 # ❗ For now, we'll let Alembic create tables
@@ -30,7 +30,10 @@ app.add_middleware(
 
 try:
     from psycopg.rows import dict_row
-    conn = psycopg.connect(host='localhost', dbname='postgres', user='postgres', password='1984152099')
+
+    conn = psycopg.connect(
+        host="localhost", dbname="postgres", user="postgres", password="1984152099"
+    )
     cursor = conn.cursor(row_factory=dict_row)
     print("Database connection was successful!")
 except Exception as e:
@@ -42,9 +45,11 @@ except Exception as e:
 def read_root():
     return {"message": "Welcome to TaskPilot API"}
 
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
 
 app.include_router(goals.router)
 app.include_router(tasks.router)

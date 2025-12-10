@@ -19,7 +19,9 @@ def plan(
     """
     typer.echo(f"🧠 Planning for goal: {goal}\n")
 
-    url = get_full_url("plan")  # expects POST /api/v1/plan or /plan depending on your config
+    url = get_full_url(
+        "plan"
+    )  # expects POST /api/v1/plan or /plan depending on your config
     payload = {"goal": goal}
 
     try:
@@ -29,7 +31,9 @@ def plan(
         raise typer.Exit(code=1)
 
     if response.status_code != 200:
-        typer.secho(f"❌ Backend error {response.status_code}:\n{response.text}", err=True)
+        typer.secho(
+            f"❌ Backend error {response.status_code}:\n{response.text}", err=True
+        )
         raise typer.Exit(code=1)
 
     data: Dict[str, Any] = response.json()
@@ -92,7 +96,9 @@ def status(
         raise typer.Exit(code=1)
 
     if response.status_code != 200:
-        typer.secho(f"❌ Backend error {response.status_code}:\n{response.text}", err=True)
+        typer.secho(
+            f"❌ Backend error {response.status_code}:\n{response.text}", err=True
+        )
         raise typer.Exit(code=1)
 
     data: Dict[str, Any] = response.json()

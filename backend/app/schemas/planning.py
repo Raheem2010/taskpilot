@@ -5,18 +5,19 @@ from pydantic import BaseModel, Field
 
 
 class GoalRequest(BaseModel):
-     goal: str = Field(..., min_length=1, description="The user's goal statement")
-     deadline: Optional[date] = None
-     time_available_per_day: Optional[int] = Field(
+    goal: str = Field(..., min_length=1, description="The user's goal statement")
+    deadline: Optional[date] = None
+    time_available_per_day: Optional[int] = Field(
         default=None,
         ge=0,
         description="Minutes per day the user can commit (must be non-negative).",
     )
 
+
 class Milestone(BaseModel):
     title: str = Field(..., min_length=1)
     description: str
-    
+
 
 class Task(BaseModel):
     id: str = Field(..., min_length=1)
@@ -30,6 +31,7 @@ class Task(BaseModel):
     recommended_day: Optional[date] = None
     status: Literal["pending", "completed", "missed"] = "pending"
 
+
 class PlanResponse(BaseModel):
     goal: str
     milestones: List[Milestone]
@@ -40,7 +42,7 @@ class PlanResponse(BaseModel):
 class TaskStatusUpdate(BaseModel):
     task_id: str = Field(..., min_length=1)
     status: Literal["pending", "completed", "missed"]
-   
+
 
 class TodayTasksResponse(BaseModel):
     date: date
@@ -53,6 +55,7 @@ class PlanSummaryResponse(BaseModel):
     completed_tasks: int
     pending_tasks: int
     missed_tasks: int
+
 
 class PlanRequest(BaseModel):
     goal: str = Field(..., min_length=1, description="The user's goal statement")

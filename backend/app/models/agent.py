@@ -13,9 +13,7 @@ class Goal(Base):
     goal = Column(String, nullable=False)
     status = Column(String, default="in_progress")
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     tasks = relationship(
         "Task",

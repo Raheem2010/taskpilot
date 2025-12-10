@@ -1,5 +1,6 @@
-BACKEND_BASE_URL = "http://localhost:8000"  
-API_PREFIX = "/api/v1"  
+BACKEND_BASE_URL = "http://localhost:8000"
+API_PREFIX = "/api/v1"
+
 
 def get_full_url(path: str) -> str:
     path = path.lstrip("/")

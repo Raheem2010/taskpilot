@@ -18,7 +18,9 @@ router = APIRouter(tags=["agent"])
 
 
 @router.post("/plan", response_model=PlanResponse)
-async def generate_plan(payload: PlanRequest, db: Session = Depends(get_db)) -> PlanResponse:
+async def generate_plan(
+    payload: PlanRequest, db: Session = Depends(get_db)
+) -> PlanResponse:
     goal_text = payload.goal
 
     # 1) Create Goal row in DB

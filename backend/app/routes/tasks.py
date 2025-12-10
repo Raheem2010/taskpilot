@@ -46,7 +46,7 @@ async def update_task_status(payload: TaskStatusUpdate) -> Dict[str, str]:
 
     updated_task = task.model_copy(update={"status": payload.status})
     FAKE_TASKS_DB[payload.task_id] = updated_task
-    
+
     return {
         "message": "Task status updated",
         "task_id": payload.task_id,
@@ -71,7 +71,6 @@ async def get_plan_summary() -> PlanSummaryResponse:
             missed += 1
         elif t.status == "pending":
             pending += 1
-
 
     # Milestones aren't tracked in this fake DB yet; we return an empty list for now.
     return PlanSummaryResponse(
