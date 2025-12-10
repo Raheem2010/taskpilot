@@ -1,18 +1,33 @@
-from fastapi import APIRouter
+# app/api/v1/routes/agent.py
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+
 from app.api.v1.schemas.agent import (
     PlanRequest,
     PlanResponse,
     MilestoneSchema,
     TaskSchema,
+    GoalStatusSchema,
+    StatusResponse,
 )
+from app.database import get_db
+from app.models.agent import Goal, Task
 
-router = APIRouter(prefix="/plan", tags=["agent"])
+router = APIRouter(tags=["agent"])
 
 
-@router.post("", response_model=PlanResponse)
-async def generate_plan(payload: PlanRequest):
-    goal = payload.goal
+@router.post("/plan", response_model=PlanResponse)
+async def generate_plan(payload: PlanRequest, db: Session = Depends(get_db)) -> PlanResponse:
+    goal_text = payload.goal
 
+    # 1) Create Goal row in DB
+    db_goal = Goal(goal=goal_text, status="in_progress")
+    db.add(db_goal)
+    db.commit()
+    db.refresh(db_goal)
+
+    # 2) Define milestones + tasks (static for now)
     milestones = [
         MilestoneSchema(
             title="Clarify and scope your goal",
@@ -27,7 +42,7 @@ async def generate_plan(payload: PlanRequest):
             description="Create a breakdown of tasks and group them into weekly batches.",
             tasks=[
                 TaskSchema(title="List all sub-tasks needed to reach your goal"),
-                TaskSchema(title="Group the tasks by week and priority"),
+                TaskSchema(title="Group tasks by week and priority"),
             ],
         ),
         MilestoneSchema(
@@ -40,4 +55,58 @@ async def generate_plan(payload: PlanRequest):
         ),
     ]
 
-    return PlanResponse(goal=goal, milestones=milestones)
+    # 3) Save each task in DB for this goal
+    for m in milestones:
+        for t in m.tasks:
+            db_task = Task(goal_id=db_goal.id, title=t.title, status=t.status)
+            db.add(db_task)
+    db.commit()
+
+    # 4) Reload tasks from DB and map IDs back into response objects
+    db.refresh(db_goal)
+    title_to_id = {t.title: t.id for t in db_goal.tasks}
+
+    for m in milestones:
+        for t in m.tasks:
+            t.id = title_to_id.get(t.title)
+
+    return PlanResponse(goal_id=db_goal.id, goal=db_goal.goal, milestones=milestones)
+
+
+@router.get("/status", response_model=StatusResponse)
+async def get_status(
+    goal_id: int | None = Query(None, description="Optional goal id to filter by"),
+    db: Session = Depends(get_db),
+):
+    """
+    Return the current status of goals + tasks from the database.
+    """
+    query = db.query(Goal)
+
+    if goal_id is not None:
+        query = query.filter(Goal.id == goal_id)
+
+    goals = query.order_by(Goal.created_at.desc()).all()
+
+    result_goals: list[GoalStatusSchema] = []
+
+    for g in goals:
+        tasks = [
+            TaskSchema(
+                id=t.id,
+                title=t.title,
+                status=t.status,
+            )
+            for t in g.tasks
+        ]
+
+        result_goals.append(
+            GoalStatusSchema(
+                id=g.id,
+                goal=g.goal,
+                status=g.status,
+                tasks=tasks,
+            )
+        )
+
+    return StatusResponse(goals=result_goals)
