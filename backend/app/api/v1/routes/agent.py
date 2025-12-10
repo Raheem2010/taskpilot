@@ -31,7 +31,7 @@ def generate_plan(payload: PlanRequest, db: Session = Depends(get_db)) -> PlanRe
             description="Define what 'success' means for this goal and set a realistic timeline.",
             tasks=[
                 TaskSchema(title="Write a clear one-sentence goal statement"),
-                TaskSchema(title="Define 2–3 success metrics"),
+                TaskSchema(title="Define 2-3 success metrics"),
             ],
         ),
         MilestoneSchema(
