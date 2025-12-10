@@ -1,9 +1,15 @@
 from datetime import date, timedelta
 from typing import List
+
+from app.schemas.planning import (
+    PlanGenerationMilestone,
+    PlanGenerationResponse,
+    PlanRequest,
+)
 from fastapi import APIRouter
-from app.schemas.planning import PlanRequest,PlanGenerationResponse, PlanGenerationMilestone
 
 router = APIRouter(tags=["Planning"])
+
 
 @router.post("/plan", response_model=PlanGenerationResponse)
 async def generate_plan(payload: PlanRequest) -> PlanGenerationResponse:

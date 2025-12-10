@@ -1,6 +1,5 @@
+from app.schemas.planning import GoalRequest, Milestone, PlanResponse, Task
 from fastapi import APIRouter, status
-
-from app.schemas.planning import GoalRequest, PlanResponse, Milestone, Task
 
 router = APIRouter(prefix="/goals", tags=["Goals"])
 
@@ -17,26 +16,26 @@ async def create_plan(payload: GoalRequest) -> PlanResponse:
 
     # TODO: Replace this with a call to Kestra workflow + Oumi agent.
     dummy_milestones = [
-    Milestone(
-        title="Understand the basics",
-        description="Learn the fundamental concepts",
-    ),
-    Milestone(
-        title="Practice with small tasks",
-        description="Apply knowledge with practical exercises",
-    ),
-]
+        Milestone(
+            title="Understand the basics",
+            description="Learn the fundamental concepts",
+        ),
+        Milestone(
+            title="Practice with small tasks",
+            description="Apply knowledge with practical exercises",
+        ),
+    ]
 
     dummy_tasks = [
         Task(
             id="1",
-            task="Read introduction materials for 30 minutes",
+            title="Read introduction materials for 30 minutes",
             milestone=dummy_milestones[0].title,
             duration_minutes=30,
         ),
         Task(
             id="2",
-            task="Do one small practice exercise",
+            title="Do one small practice exercise",
             milestone=dummy_milestones[1].title,
             duration_minutes=45,
         ),
