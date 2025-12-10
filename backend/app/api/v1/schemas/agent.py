@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TaskSchema(BaseModel):
@@ -19,7 +19,11 @@ class MilestoneSchema(BaseModel):
 
 
 class PlanRequest(BaseModel):
-    goal: str
+    goal: str = Field(
+        ...,
+        min_length=1,
+        description="The user's goal statement",
+    )
 
 
 class PlanResponse(BaseModel):

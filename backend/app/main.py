@@ -6,6 +6,7 @@ from app.models import agent
 from app.routes import goals, planning, tasks
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 app = FastAPI(
     title="TaskPilot Backend",

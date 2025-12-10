@@ -21,7 +21,7 @@ class Milestone(BaseModel):
 
 class Task(BaseModel):
     id: str = Field(..., min_length=1)
-    task: str = Field(..., min_length=1)
+    title: str = Field(..., min_length=1, description="Task title")
     milestone: Optional[str] = None
     duration_minutes: Optional[int] = Field(
         default=None,

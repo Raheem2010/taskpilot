@@ -61,13 +61,16 @@ async def generate_plan(
             db.add(db_task)
     db.commit()
 
-    # 4) Reload tasks from DB and map IDs back into response objects
+    # 4) Reload tasks from DB and assign IDs in creation order
     db.refresh(db_goal)
-    title_to_id = {t.title: t.id for t in db_goal.tasks}
+    db_tasks = list(db_goal.tasks)
+    task_idx = 0
 
     for m in milestones:
         for t in m.tasks:
-            t.id = title_to_id.get(t.title)
+            if task_idx < len(db_tasks):
+                t.id = db_tasks[task_idx].id
+                task_idx += 1
 
     return PlanResponse(goal_id=db_goal.id, goal=db_goal.goal, milestones=milestones)
 
