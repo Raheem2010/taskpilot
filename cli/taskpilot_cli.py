@@ -136,7 +136,7 @@ def health() -> None:
     """
     Quick health check: verify that the TaskPilot backend is reachable.
     """
-    url = get_full_url("status")
+    url = get_full_url("health")
 
     try:
         response = requests.get(url, timeout=10)
