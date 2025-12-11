@@ -17,8 +17,10 @@ export default function StatusPage() {
       try {
         const data = await getStatus();
         setGoals(data.goals ?? []);
-      } catch (err: any) {
-        setError(err.message || "Failed to load status");
+      } catch (err) {
+        const message =
+        err instanceof Error ? err.message : "Failed to load status";
+        setError(message);
       } finally {
         setLoading(false);
       }

@@ -19,8 +19,10 @@ export default function HomePage() {
     try {
       const response = await createPlan(goal);
       setPlan(response);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err) {
+      const message =
+      err instanceof Error ? err.message : "Failed to load status";
+      setError(message);
     } finally {
       setLoading(false);
     }
