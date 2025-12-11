@@ -8,21 +8,33 @@ from .config import get_full_url
 app = typer.Typer(help="TaskPilot CLI – plan and track your goals with AI agents.")
 
 
+import json
+
+import requests
+import typer
+
+from cli.config import get_full_url
+
+app = typer.Typer(help="TaskPilot CLI")
+
+
 @app.command()
 def plan(
     goal: str = typer.Argument(
         ...,
         help="Your main goal, e.g. 'Launch my shoe brand in 3 months'",
-    )
-):
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Print raw JSON response instead of pretty text (for automation).",
+    ),
+) -> None:
     """
-    Send a goal to TaskPilot backend and get an AI-generated (or dummy) plan: milestones + tasks.
+    Send a goal to the TaskPilot backend and get a plan (milestones + tasks).
     """
-    typer.echo(f"🧠 Planning for goal: {goal}\n")
 
-    url = get_full_url(
-        "plan"
-    )  # expects POST /api/v1/plan or /plan depending on your config
+    url = get_full_url("plan")
     payload = {"goal": goal}
 
     try:
@@ -33,61 +45,53 @@ def plan(
 
     if response.status_code != 200:
         typer.secho(
-            f"❌ Backend error {response.status_code}:\n{response.text}", err=True
+            f"❌ Backend returned {response.status_code}: {response.text}",
+            err=True,
+            fg=typer.colors.RED,
         )
         raise typer.Exit(code=1)
 
-    data: Dict[str, Any] = response.json()
-    milestones: List[Dict[str, Any]] = data.get("milestones", [])
+    data = response.json()
 
-    if not milestones:
-        typer.echo("⚠️ No milestones returned from backend.")
-        typer.echo(f"Raw response: {data}")
-        raise typer.Exit(code=0)
+    # 🔁 Automation mode: raw JSON
+    if json_output:
+        typer.echo(json.dumps(data, indent=2))
+        return
 
-    for i, m in enumerate(milestones, start=1):
-        title = m.get("title") or f"Milestone {i}"
-        desc = m.get("description") or ""
+    # 🧑🏽‍💻 Human-readable pretty output
+    typer.secho(f"🧠 Planning for goal: {data['goal']}", bold=True)
+    typer.echo()
 
-        typer.secho(f"📌 Milestone {i}: {title}", bold=True)
-        if desc:
-            typer.echo(f"    📝 {desc}")
-
-        tasks = m.get("tasks") or []
-        if not tasks:
-            typer.echo("    (No tasks defined)")
-        else:
-            for j, t in enumerate(tasks, start=1):
-                if isinstance(t, dict):
-                    t_title = t.get("title") or t.get("name") or str(t)
-                    t_status = t.get("status", "pending")
-                else:
-                    t_title = str(t)
-                    t_status = "pending"
-
-                typer.echo(f"    - [{t_status:^8}] {t_title}")
-
-        typer.echo("")  # blank line between milestones
+    for idx, milestone in enumerate(data["milestones"], start=1):
+        typer.secho(f"📌 Milestone {idx}: {milestone['title']}")
+        if milestone.get("description"):
+            typer.echo(f"    📝 {milestone['description']}")
+        for task in milestone["tasks"]:
+            status = task.get("status", "pending")
+            typer.echo(f"    - [{status:<8}] {task['title']}")
+        typer.echo()
 
 
 @app.command()
 def status(
-    goal_id: Optional[str] = typer.Option(
+    goal_id: int = typer.Option(
         None,
         "--goal-id",
-        "-g",
-        help="Optional ID of the goal to filter status on.",
-    )
-):
+        help="Filter by a specific goal ID.",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Print raw JSON response instead of pretty text (for automation).",
+    ),
+) -> None:
     """
-    Get the current status of your goals/tasks from TaskPilot backend.
+    Fetch current goals and tasks from the TaskPilot backend.
     """
-    typer.echo("📊 Fetching status from TaskPilot backend...\n")
 
-    url = get_full_url("status")  # we will later implement GET /api/v1/status
-    params: Dict[str, Any] = {}
-
-    if goal_id:
+    url = get_full_url("status")
+    params: dict = {}
+    if goal_id is not None:
         params["goal_id"] = goal_id
 
     try:
@@ -98,33 +102,65 @@ def status(
 
     if response.status_code != 200:
         typer.secho(
-            f"❌ Backend error {response.status_code}:\n{response.text}", err=True
+            f"❌ Backend returned {response.status_code}: {response.text}",
+            err=True,
+            fg=typer.colors.RED,
         )
         raise typer.Exit(code=1)
 
-    data: Dict[str, Any] = response.json()
-    goals: List[Dict[str, Any]] = data.get("goals", [])
+    data = response.json()
 
+    # Automation mode: raw JSON
+    if json_output:
+        typer.echo(json.dumps(data, indent=2))
+        return
+
+    # 🧑🏽‍💻 Human-readable pretty output
+    goals = data.get("goals", [])
     if not goals:
-        typer.echo("No goals found yet. Try creating one with `taskpilot plan`.")
-        raise typer.Exit(code=0)
+        typer.secho("ℹ️ No goals found yet.", fg=typer.colors.YELLOW)
+        return
 
-    for g in goals:
-        gid = g.get("id") or g.get("goal_id") or "N/A"
-        title = g.get("title") or g.get("goal") or "Untitled goal"
-        status_val = g.get("status") or "unknown"
+    for goal in goals:
+        typer.secho(f"🎯 Goal: {goal['goal']}", bold=True)
+        typer.echo(f"    ID: {goal['id']}")
+        typer.echo(f"    Status: {goal['status']}")
+        tasks = goal.get("tasks", [])
+        for task in tasks:
+            typer.echo(f"    - [{task['status']:<8}] {task['title']}")
+        typer.echo()
 
-        typer.secho(f"🎯 Goal: {title}", bold=True)
-        typer.echo(f"    ID: {gid}")
-        typer.echo(f"    Status: {status_val}")
 
-        tasks = g.get("tasks") or []
-        for t in tasks:
-            t_title = t.get("title") or t.get("name") or "Untitled task"
-            t_status = t.get("status") or "pending"
-            typer.echo(f"    - [{t_status:^8}] {t_title}")
+@app.command()
+def health() -> None:
+    """
+    Quick health check: verify that the TaskPilot backend is reachable.
+    """
+    url = get_full_url("status")
 
-        typer.echo("")
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.exceptions.RequestException as e:
+        typer.secho(
+            f"❌ Backend health check failed: {e}",
+            err=True,
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1) from e
+
+    if response.status_code != 200:
+        typer.secho(
+            f"❌ Backend unhealthy: {response.status_code} -> {response.text}",
+            err=True,
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
+
+    typer.secho(
+        "✅ Backend is healthy and reachable!",
+        fg=typer.colors.GREEN,
+        bold=True,
+    )
 
 
 def main():
