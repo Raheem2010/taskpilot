@@ -13,9 +13,6 @@ KESTRA_FLOW_ID = "taskpilot_ai_agent"
 KESTRA_USERNAME = os.getenv("KESTRA_USERNAME")
 KESTRA_PASSWORD = os.getenv("KESTRA_PASSWORD")
 
-if not KESTRA_USERNAME or not KESTRA_PASSWORD:
-    raise HTTPException(status_code=500, detail="Kestra credentials not configured")
-
 
 @router.post("/daily-review")
 async def trigger_daily_review():
@@ -23,6 +20,9 @@ async def trigger_daily_review():
     Trigger the Kestra AI agent flow that summarizes tasks
     and optionally marks one as completed.
     """
+    if not KESTRA_USERNAME or not KESTRA_PASSWORD:
+        raise HTTPException(status_code=500, detail="Kestra credentials not configured")
+    
     url = f"{KESTRA_BASE_URL}/api/v1/main/executions/{KESTRA_NAMESPACE}/{KESTRA_FLOW_ID}"
 
 
