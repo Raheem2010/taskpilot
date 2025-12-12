@@ -10,8 +10,12 @@ KESTRA_UI_URL = os.getenv("KESTRA_UI_URL", KESTRA_BASE_URL)
 KESTRA_NAMESPACE = "taskpilot.ai"
 KESTRA_FLOW_ID = "taskpilot_ai_agent"
 
-KESTRA_USERNAME = os.getenv("KESTRA_USERNAME", "taskpilot@local.test")
-KESTRA_PASSWORD = os.getenv("KESTRA_PASSWORD", "Taskpilot123")
+KESTRA_USERNAME = os.getenv("KESTRA_USERNAME")
+KESTRA_PASSWORD = os.getenv("KESTRA_PASSWORD")
+
+if not KESTRA_USERNAME or not KESTRA_PASSWORD:
+    raise HTTPException(status_code=500, detail="Kestra credentials not configured")
+
 
 @router.post("/daily-review")
 async def trigger_daily_review():
@@ -50,7 +54,7 @@ async def trigger_daily_review():
         "message": "Kestra daily-review flow triggered",
         "execution_id": data.get("id"),
         "kestra_url": (
-            f"{KESTRA_BASE_URL}/ui/executions/"
+            f"{KESTRA_UI_URL}/ui/executions/"
             f"{KESTRA_NAMESPACE}/{KESTRA_FLOW_ID}/{execution_id}"
         ),
     }

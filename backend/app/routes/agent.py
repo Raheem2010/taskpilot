@@ -36,6 +36,12 @@ def execute_agent(
     - Else if goal_id is provided: work on the goal in general.
     - Else: 400.
     """
+    if payload.task_id is not None and payload.goal_id is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="Provide either task_id or goal_id, not both.",
+        )
+
     instruction: str
 
     if payload.task_id is not None:
@@ -46,18 +52,15 @@ def execute_agent(
         # Base instruction: you can refine later
         instruction = payload.instruction or f"Work on task: {task.title}"
 
-        # Optionally mark task as in progress
-        if hasattr(task, "status"):
-            task.status = "in_progress"
-            db.add(task)
-            db.commit()
 
     elif payload.goal_id is not None:
         goal = db.query(models.Goal).get(payload.goal_id)
         if not goal:
             raise HTTPException(status_code=404, detail="Goal not found")
 
-        instruction = payload.instruction or f"Work on goal: {goal.title}"
+        instruction = payload.instruction or f"Work on goal: {goal.goal}"
+
+
     else:
         raise HTTPException(
             status_code=400,

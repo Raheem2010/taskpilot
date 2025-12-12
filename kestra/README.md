@@ -9,7 +9,7 @@ Kestra is run in **standalone mode** with **basic authentication enabled** and i
 ## Folder Structure
 
 - `docker-compose.yml` — Runs Kestra locally in standalone mode
-- `.env_encoded` — Encoded/local environment variables (NOT committed)
+- `.env_encoded` — Local env vars (NOT committed)
 - `.env` — Optional local env file (NOT committed)
 - `.env.example` — Example env file (safe to commit)
 - `kestra-data/` — Kestra local storage volume (NOT committed)
@@ -23,9 +23,9 @@ Kestra is run in **standalone mode** with **basic authentication enabled** and i
 
 ---
 
-## Setup Instructions
+## Setup
 
-### 1️⃣ Create environment file
+### 1) Create your local env file
 
 Copy the example file:
 
@@ -37,26 +37,26 @@ Windows (CMD)
 cmd
 Copy code
 copy .env.example .env_encoded
-Then update .env_encoded with your local values.
+Then edit .env_encoded and set your values.
 
 ⚠️ Do not commit .env or .env_encoded.
 
-2️⃣ Start Kestra
+2) Start Kestra
 From the kestra/ directory:
 
 bash
 Copy code
 docker compose up -d
-Kestra will start in standalone mode and expose the UI and API on port 8080.
+Kestra exposes the UI and API on port 8080.
 
-3️⃣ Access Kestra UI
+3) Access Kestra UI
 URL: http://localhost:8080
 
 Username: taskpilot@local.test
 
 Password: Taskpilot123
 
-4️⃣ Health Check
+4) Health check
 bash
 Copy code
 curl http://localhost:8080/api/v1/health
@@ -66,65 +66,40 @@ json
 Copy code
 { "status": "UP" }
 How TaskPilot Uses Kestra
-TaskPilot triggers automation workflows by calling the Kestra API endpoint:
+TaskPilot triggers workflows through:
 
-bash
+text
 Copy code
 POST /api/v1/main/executions
 This call is made only from the backend.
 The CLI and frontend never call Kestra directly.
 
 Authentication
-Kestra is secured using basic authentication.
-The backend must send valid credentials when triggering executions.
+Kestra is secured using basic authentication. The backend must send valid credentials.
 
-Required Backend Environment Variables
-The backend must be configured with:
+Backend environment variables
+Set these in the backend environment:
 
+env
+Copy code
 KESTRA_BASE_URL=http://localhost:8080
-
+KESTRA_UI_URL=http://localhost:8080
 KESTRA_NAMESPACE=main
-
 KESTRA_FLOW_ID=<flow_id>
-
 KESTRA_USERNAME=taskpilot@local.test
-
 KESTRA_PASSWORD=Taskpilot123
-
-Stopping and Resetting Kestra
+Stopping and Resetting
 Stop containers:
 
 bash
 Copy code
 docker compose down
-Stop and remove all local Kestra data:
+Reset local Kestra data (removes execution history):
 
 bash
 Copy code
 docker compose down -v
-Troubleshooting
-401 Unauthorized
-Ensure the backend is sending basic auth credentials
+Security Notes (Local Dev Only)
+The Docker socket mount (/var/run/docker.sock) grants host-level Docker access. This is acceptable for local development but must not be used in production.
 
-Confirm the username/password match those in docker-compose.yml
-
-Do not mix basic auth with token auth
-
-Cannot reach Kestra from backend
-From host machine: use http://localhost:8080
-
-From another Docker container: use http://kestra:8080
-
-Executions trigger but do not appear
-Confirm namespace is main
-
-Confirm flow ID exists in Kestra
-
-Check logs:
-
-bash
-Copy code
-docker compose logs -f kestra
-
-NOTE:
-Kestra credentials shown in this repository are for local development only and are not used in production.
+Credentials shown here are for local development only and should be replaced in production.

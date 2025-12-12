@@ -20,6 +20,9 @@ async def debug_seed_tasks() -> Dict[str, str]:
     Debug-only endpoint to seed some example tasks into the in-memory FAKE_TASKS_DB.
     This is just for testing Kestra & the AI agent.
     """
+    if os.getenv("TASKPILOT_ENABLE_DEBUG_SEED") != "true":
+        raise HTTPException(status_code=404, detail="Not found")
+
     FAKE_TASKS_DB.clear()
 
     FAKE_TASKS_DB["1"] = Task(

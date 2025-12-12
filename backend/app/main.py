@@ -1,10 +1,8 @@
 import psycopg
-from app import models
 from app.api.v1.routes.agent import router as agent_router
 from app.api.v1 import api_router
 from app.database import Base, engine
-from app.models import agent
-from app.routes import goals, planning, tasks, agent
+from app.routes import goals, planning, tasks
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -52,6 +50,6 @@ def read_root():
 def health_check():
     return {"status": "ok"}
 
-app.include_router(agent_router, prefix="/api/v1")
+
 app.include_router(automation.router, prefix="/api/v1")
 app.include_router(api_router)
