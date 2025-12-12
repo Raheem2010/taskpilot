@@ -209,3 +209,9 @@ __marimo__/
 #Env
 .env
 backend/.env
+
+# Kestra secrets & runtime data
+kestra/.env
+kestra/.env_encoded
+kestra/kestra-data/
+
