@@ -61,5 +61,5 @@ async def trigger_daily_review():
     return {
         "message": "Kestra daily-review flow triggered",
         "execution_id": execution_id,
-        "kestra_url": f"{KESTRA_UI_URL}/ui/executions/  {KESTRA_NAMESPACE}/{KESTRA_FLOW_ID}/{execution_id}",,
+        "kestra_url": f"{KESTRA_UI_URL}/ui/execution/{KESTRA_NAMESPACE}/{KESTRA_FLOW_ID}/{execution_id}",
     }
