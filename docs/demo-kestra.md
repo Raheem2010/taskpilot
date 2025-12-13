@@ -1,4 +1,3 @@
-```md
 ## 🤖 Automation Demo — Daily Review Agent (Kestra)
 
 This demo shows how TaskPilot triggers an AI automation workflow using **Kestra**.
