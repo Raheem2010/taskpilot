@@ -40,7 +40,7 @@ class PlanResponse(BaseModel):
 
 
 class TaskStatusUpdate(BaseModel):
-    task_id: str = Field(..., min_length=1)
+    task_id: int = Field(..., description="The task ID to update")
     status: Literal["pending", "completed", "missed"]
 
 
@@ -57,7 +57,7 @@ class PlanSummaryResponse(BaseModel):
     missed_tasks: int
 
 
-class PlanRequest(BaseModel):
+class PlanGenerationRequest(BaseModel):
     goal: str = Field(..., min_length=1, description="The user's goal statement")
     deadline: Optional[date] = None
 

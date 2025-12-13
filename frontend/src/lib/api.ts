@@ -1,5 +1,7 @@
-const BASE_URL =
+const RAW_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+
+const BASE_URL = RAW_BASE_URL.replace(/\/+$/, ""); // remove trailing /
 
 export type Task = {
   id: number;
@@ -36,39 +38,58 @@ export type StatusResponse = {
   goals: StatusGoal[];
 };
 
+async function parseJsonOrThrow<T>(res: Response, url: string): Promise<T> {
+  const contentType = res.headers.get("content-type") ?? "";
+
+  // Read body once (safe for both JSON + HTML)
+  const bodyText = await res.text();
+
+  if (!res.ok) {
+    const preview = bodyText.slice(0, 250);
+    throw new Error(`Backend error (${res.status}) @ ${url}: ${preview}`);
+  }
+
+  if (!contentType.includes("application/json")) {
+    const preview = bodyText.slice(0, 250);
+    throw new Error(
+      `Non-JSON response @ ${url}. content-type=${contentType}. body=${preview}`
+    );
+  }
+
+  try {
+    return JSON.parse(bodyText) as T;
+  } catch {
+    const preview = bodyText.slice(0, 250);
+    throw new Error(`Invalid JSON @ ${url}: ${preview}`);
+  }
+}
+
 export async function createPlan(goal: string): Promise<PlanResponse> {
-  const res = await fetch(`${BASE_URL}/api/v1/plan`, {
+  const url = `${BASE_URL}/api/v1/plan`;
+  const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ goal }),
   });
 
-  if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(`Backend error (${res.status}): ${msg}`);
-  }
-
-  return res.json();
+  return parseJsonOrThrow<PlanResponse>(res, url);
 }
 
 export async function getStatus(goalId?: number): Promise<StatusResponse> {
   const params = goalId ? `?goal_id=${goalId}` : "";
-  const res = await fetch(`${BASE_URL}/api/v1/status${params}`);
+  const url = `${BASE_URL}/api/v1/status${params}`;
+  const res = await fetch(url);
 
-  if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(`Backend error (${res.status}): ${msg}`);
-  }
-
-  return res.json();
+  return parseJsonOrThrow<StatusResponse>(res, url);
 }
 
 export async function healthCheck(): Promise<boolean> {
-  const res = await fetch(`${BASE_URL}/health`);
+  const url = `${BASE_URL}/health`;
+  const res = await fetch(url);
+
   if (!res.ok) {
-    throw new Error("Backend unhealthy");
+    const txt = await res.text();
+    throw new Error(`Backend unhealthy (${res.status}): ${txt.slice(0, 200)}`);
   }
   return true;
 }
