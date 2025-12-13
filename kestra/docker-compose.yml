@@ -15,6 +15,7 @@ services:
       - "8080:8080"
     volumes:
       - kestra-data:/app/storage
+      - ./flows:/app/flows
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/kestra-wd:/tmp/kestra-wd
     environment:
@@ -27,10 +28,19 @@ services:
               password: Taskpilot123
           repository:
             type: h2
+            local:
+              path: app/storage
           storage:
             type: local
             local:
               base-path: "/app/storage"
+          flows:
+            storage:
+              type: local
+              local: 
+                base-path: "/app/flows"
+            autoload:
+              enabled: true
           queue:
             type: memory
           tasks:

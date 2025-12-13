@@ -1,0 +1,18 @@
+id: taskpilot_ai_agent
+namespace: main
+
+inputs:
+  - id: goal
+    type: STRING
+    required: true
+  - id: due_date
+    type: STRING
+    required: false
+  - id: source
+    type: STRING
+    required: false
+
+tasks:
+  - id: log_inputs
+    type: io.kestra.plugin.core.log.Log
+    message: "TaskPilot triggered: goal={{ inputs.goal }}, due={{ inputs.due_date }}, source={{ inputs.source }}"
