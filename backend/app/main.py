@@ -14,7 +14,6 @@ app = FastAPI(
     description="Backend API for TaskPilot - AI-powered task planning and workflow automation.",
 )
 
-# ❗ For now, we'll let Alembic create tables
 
 origins = [
     "http://localhost:3000",
