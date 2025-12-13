@@ -26,7 +26,7 @@ docker compose up -d
 ```
 
 Open the Kestra UI:
-http://localhost:8080
+<http://localhost:8080>
 
 ## 2️⃣ Verify the Flow Exists
 
