@@ -20,8 +20,7 @@ export default function HomePage() {
       const response = await createPlan(goal);
       setPlan(response);
     } catch (err) {
-      const message =
-      err instanceof Error ? err.message : "Failed to load status";
+      const message = err instanceof Error ? err.message : "Failed to generate plan";
       setError(message);
     } finally {
       setLoading(false);
@@ -33,9 +32,7 @@ export default function HomePage() {
       <div className="w-full max-w-3xl space-y-8">
         {/* Hero / Header */}
         <header className="text-center space-y-3">
-          <h1 className="text-4xl font-extrabold tracking-tight">
-            TaskPilot
-          </h1>
+          <h1 className="text-4xl font-extrabold tracking-tight">TaskPilot</h1>
           <p className="text-sm text-slate-300 max-w-xl mx-auto">
             Turn a big, fuzzy goal into a clear plan with milestones and actionable tasks.
           </p>
@@ -52,9 +49,7 @@ export default function HomePage() {
 
         {/* Form Card */}
         <section className="bg-slate-900/70 border border-slate-700 rounded-2xl shadow-xl p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-slate-100 text-left">
-            1. Describe your goal
-          </h2>
+          <h2 className="text-lg font-semibold text-slate-100 text-left">1. Describe your goal</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <textarea
               value={goal}
@@ -74,77 +69,82 @@ export default function HomePage() {
             </button>
           </form>
 
-          {error && (
-            <p className="mt-2 text-sm text-red-400">
-              {error}
-            </p>
-          )}
+          {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
         </section>
 
         {/* Plan Result */}
         {plan && (
           <section className="space-y-4">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold text-slate-50">
-                2. Your plan
-              </h2>
+              <h2 className="text-xl font-semibold text-slate-50">2. Your plan</h2>
               <p className="text-sm text-slate-300">
                 Goal:&nbsp;
-                <span className="font-medium text-slate-100">
-                  {plan.goal}
-                </span>
+                <span className="font-medium text-slate-100">{plan.goal}</span>
               </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              {plan.milestones.map((m, idx) => (
-                <article
-                  key={idx}
-                  className="bg-slate-900/60 border border-slate-700 rounded-2xl shadow-md p-4 flex flex-col gap-2"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1">
-                      <h3 className="text-base font-semibold text-slate-50">
-                        Milestone {idx + 1}
-                      </h3>
-                      <p className="text-sm font-medium text-blue-300">
-                        {m.title}
-                      </p>
+              {plan.milestones.map((m, idx) => {
+                // Support BOTH response shapes:
+                // A) Agent shape: m.tasks exists
+                // B) Planning shape: tasks are separate under plan.tasks with milestone name
+                const nestedTasks = (m as any).tasks as any[] | undefined;
+                const flatTasks = (plan as any).tasks as any[] | undefined;
+
+                const milestoneTasks =
+                  Array.isArray(nestedTasks)
+                    ? nestedTasks
+                    : Array.isArray(flatTasks)
+                    ? flatTasks.filter((t) => t?.milestone === m.title)
+                    : [];
+
+                return (
+                  <article
+                    key={idx}
+                    className="bg-slate-900/60 border border-slate-700 rounded-2xl shadow-md p-4 flex flex-col gap-2"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <h3 className="text-base font-semibold text-slate-50">
+                          Milestone {idx + 1}
+                        </h3>
+                        <p className="text-sm font-medium text-blue-300">{m.title}</p>
+                      </div>
+                      <span className="inline-flex items-center justify-center text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                        Step {idx + 1}
+                      </span>
                     </div>
-                    <span className="inline-flex items-center justify-center text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30">
-                      Step {idx + 1}
-                    </span>
-                  </div>
 
-                  {m.description && (
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      {m.description}
-                    </p>
-                  )}
+                    {m.description && (
+                      <p className="text-xs text-slate-300 leading-relaxed">{m.description}</p>
+                    )}
 
-                  <div className="mt-2 space-y-1.5">
-                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                      Tasks
-                    </p>
-                    <ul className="space-y-1.5 text-xs text-slate-100">
-                      {m.tasks.map((t) => (
-                        <li
-                          key={t.id}
-                          className="flex items-start gap-2"
-                        >
-                          <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-blue-400" />
-                          <span>
-                            <span className="mr-1 text-[11px] px-1 py-[1px] rounded-full bg-slate-800 border border-slate-600 text-slate-300">
-                              {t.status}
-                            </span>
-                            {t.title}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              ))}
+                    <div className="mt-2 space-y-1.5">
+                      <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                        Tasks
+                      </p>
+
+                      {milestoneTasks.length === 0 ? (
+                        <p className="text-xs text-slate-400">No tasks found for this milestone.</p>
+                      ) : (
+                        <ul className="space-y-1.5 text-xs text-slate-100">
+                          {milestoneTasks.map((t, tIdx) => (
+                            <li key={t?.id ?? `${idx}-${tIdx}`} className="flex items-start gap-2">
+                              <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-blue-400" />
+                              <span>
+                                <span className="mr-1 text-[11px] px-1 py-[1px] rounded-full bg-slate-800 border border-slate-600 text-slate-300">
+                                  {t?.status ?? "pending"}
+                                </span>
+                                {t?.title ?? "Untitled task"}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
         )}

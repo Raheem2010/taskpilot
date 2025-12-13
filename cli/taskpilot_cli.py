@@ -4,16 +4,11 @@ import requests
 import typer
 
 from .config import get_full_url
+import json
 
 app = typer.Typer(help="TaskPilot CLI – plan and track your goals with AI agents.")
 
 
-import json
-
-import requests
-import typer
-
-from cli.config import get_full_url
 
 app = typer.Typer(help="TaskPilot CLI")
 

@@ -16,7 +16,7 @@ class GoalRequest(BaseModel):
 
 class Milestone(BaseModel):
     title: str = Field(..., min_length=1)
-    description: str
+    description: Optional[str] = None
 
 
 class Task(BaseModel):

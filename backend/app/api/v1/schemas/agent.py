@@ -15,7 +15,7 @@ class TaskSchema(BaseModel):
 class MilestoneSchema(BaseModel):
     title: str
     description: Optional[str] = None
-    tasks: List[TaskSchema] = []
+    tasks: List[TaskSchema] = Field(default_factory=list)
 
 
 class PlanRequest(BaseModel):

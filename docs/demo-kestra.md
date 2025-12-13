@@ -57,7 +57,7 @@ Expected Response
 ```
 
 ### Backend Trigger Response
-![Backend Trigger](./screenshots/backend-response.png)
+![Backend Trigger](./screenshots/backend_response.png)
 
 ## 4️⃣ View Execution in Kestra
 
