@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { getStatus, StatusGoal } from "../../lib/api";
+import { getStatus, StatusGoal } from "@/lib/api";
 
 type Filter = "all" | "in_progress" | "completed";
 
