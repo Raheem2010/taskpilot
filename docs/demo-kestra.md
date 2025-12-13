@@ -44,15 +44,18 @@ Flows → main → taskpilot_ai_agent
 3️⃣ Trigger Automation from Backend
 
 Trigger the automation via the backend API:
-
+```bash
 curl -X POST http://localhost:8000/api/v1/automation/daily-review
+```
 
 Expected Response
+```json
 {
   "message": "Kestra daily-review flow triggered",
   "execution_id": "...",
   "kestra_url": "http://localhost:8080/ui/executions/main/taskpilot_ai_agent/<id>"
 }
+```
 
 ### Backend Trigger Response
 ![Backend Trigger](./screenshots/backend-response.png)
