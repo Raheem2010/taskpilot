@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+#Env
+.env
+backend/.env
+
+# Kestra secrets & runtime data
+kestra/.env
+kestra/.env_encoded
+kestra/kestra-data/
+

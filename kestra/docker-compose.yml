@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  kestra:
+    image: kestra/kestra:latest
+    pull_policy: always
+    stop_grace_period: 6m
+    env_file:
+      - .env_encoded
+    user: "root"
+    command: server standalone
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:8080"
+    volumes:
+      - kestra-data:/app/storage
+      - ./flows:/app/flows
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/kestra-wd:/tmp/kestra-wd
+    environment:
+      KESTRA_CONFIGURATION: |
+        kestra:
+          server:
+            type: STANDALONE
+            basic-auth:
+              username: taskpilot@local.test
+              password: Taskpilot123
+          repository:
+            type: h2
+            local:
+              path: app/storage
+          storage:
+            type: local
+            local:
+              base-path: "/app/storage"
+          flows:
+            storage:
+              type: local
+              local: 
+                base-path: "/app/flows"
+            autoload:
+              enabled: true
+          queue:
+            type: memory
+          tasks:
+            tmp-dir:
+              path: /tmp/kestra-wd/tmp
+          url: http://localhost:8080/
+
+volumes:
+  kestra-data:
+    driver: local

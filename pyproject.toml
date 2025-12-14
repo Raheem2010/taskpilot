@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskpilot"
+version = "0.1.0"
+description = "TaskPilot AI — an agent-powered task planning and automation CLI"
+requires-python = ">=3.10"
+dependencies = [
+  "requests>=2.31.0",
+  "typer>=0.12.0",
+]
+
+[project.scripts]
+taskpilot = "cli.taskpilot_cli:app"
+
+[tool.setuptools]
+# Tell setuptools to only package the CLI (avoid backend/frontend/kestra/workflows)
+packages = ["cli"]
+
+# -------------------------------
+# Tooling / formatting
+# -------------------------------
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
