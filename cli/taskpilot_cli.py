@@ -62,7 +62,7 @@ def plan(
         if milestone.get("description"):
             typer.echo(f"    📝 {milestone['description']}")
         for task in milestone["tasks"]:
-    # task can be a dict (new format) or a string (old/simple format)
+            # task can be a dict (new format) or a string (old/simple format)
             if isinstance(task, dict):
                 title = task.get("title", "")
                 status = task.get("status", "pending")
@@ -70,7 +70,7 @@ def plan(
                 title = str(task)
                 status = "pending"
 
-    typer.echo(f"    - [{status:<8}] {title}")
+            typer.echo(f"    - [{status:<8}] {title}")
 
 
 @app.command()
