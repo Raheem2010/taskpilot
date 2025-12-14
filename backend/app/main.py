@@ -15,6 +15,7 @@ app = FastAPI(
 )
 
 
+
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -51,4 +52,5 @@ def health_check():
 
 
 app.include_router(automation.router, prefix="/api/v1")
+app.include_router(agent_router, prefix="/api/v1")
 app.include_router(api_router)

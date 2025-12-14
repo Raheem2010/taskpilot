@@ -4,7 +4,7 @@ from typing import List
 from app.schemas.planning import (
     PlanGenerationMilestone,
     PlanGenerationResponse,
-    PlanRequest,
+    PlanGenerationRequest,
 )
 from fastapi import APIRouter
 
@@ -12,7 +12,7 @@ router = APIRouter(tags=["Planning"])
 
 
 @router.post("/plan", response_model=PlanGenerationResponse)
-async def generate_plan(payload: PlanRequest) -> PlanGenerationResponse:
+async def generate_plan(payload: PlanGenerationRequest) -> PlanGenerationResponse:
     """
     Simple dummy planner that turns a goal + deadline into 2 milestones.
     """
