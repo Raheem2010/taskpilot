@@ -4,3 +4,5 @@ psycopg[binary]
 sqlalchemy==2.0.43
 pydantic==2.8.0
 alembic==1.11.1
+httpx==1.2.2
+python-dotenv==1.0.0
