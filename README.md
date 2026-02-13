@@ -131,5 +131,3 @@ Clean separation of concerns (frontend, backend, CLI)
 
 Production-ready deployment
 
-Built with ❤️ for AI Agents Assemble
-By Fortune Techies
